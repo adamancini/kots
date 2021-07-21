@@ -32,7 +32,7 @@ import (
 func (s *KOTSStore) migrateSupportBundlesFromPostgres() error {
 	logger.Debug("migrating support bundles from postgres")
 
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select id, watch_id, name, size, status, tree_index, created_at, uploaded_at, is_archived from supportbundle order by created_at desc`
 	rows, err := db.Query(query)
 	if err != nil {

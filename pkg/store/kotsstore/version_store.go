@@ -68,7 +68,7 @@ func (s *KOTSStore) ensureApplicationMetadata(applicationMetadata string, namesp
 }
 
 func (s *KOTSStore) IsRollbackSupportedForVersion(appID string, sequence int64) (bool, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select kots_app_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, appID, sequence)
 
@@ -91,7 +91,7 @@ func (s *KOTSStore) IsRollbackSupportedForVersion(appID string, sequence int64) 
 }
 
 func (s *KOTSStore) IsIdentityServiceSupportedForVersion(appID string, sequence int64) (bool, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select identity_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, appID, sequence)
 
@@ -107,7 +107,7 @@ func (s *KOTSStore) IsIdentityServiceSupportedForVersion(appID string, sequence 
 }
 
 func (s *KOTSStore) IsSnapshotsSupportedForVersion(a *apptypes.App, sequence int64, renderer rendertypes.Renderer) (bool, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select backup_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, a.ID, sequence)
 
@@ -245,7 +245,7 @@ func (s *KOTSStore) GetAppVersionArchive(appID string, sequence int64, dstPath s
 }
 
 func (s *KOTSStore) CreateAppVersion(appID string, currentSequence *int64, filesInDir string, source string, skipPreflights bool, gitops gitopstypes.DownstreamGitOps) (int64, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -528,7 +528,7 @@ func (s *KOTSStore) addAppVersionToDownstream(tx *sql.Tx, appID string, clusterI
 }
 
 func (s *KOTSStore) GetAppVersion(appID string, sequence int64) (*versiontypes.AppVersion, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select sequence, created_at, status, applied_at, kots_installation_spec, kots_app_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, appID, sequence)
 
@@ -575,7 +575,7 @@ func (s *KOTSStore) GetAppVersion(appID string, sequence int64) (*versiontypes.A
 }
 
 func (s *KOTSStore) GetAppVersionsAfter(appID string, sequence int64) ([]*versiontypes.AppVersion, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select sequence, created_at, status, applied_at, kots_installation_spec from app_version where app_id = $1 and sequence > $2`
 	rows, err := db.Query(query, appID, sequence)
 	if err != nil {

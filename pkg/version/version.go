@@ -28,7 +28,7 @@ import (
 func GetNextAppSequence(appID string, currentSequence *int64) (int64, error) {
 	newSequence := 0
 	if currentSequence != nil {
-		db := persistence.MustGetPGSession()
+		db := persistence.MustGetDBSession()
 		row := db.QueryRow(`select max(sequence) from app_version where app_id = $1`, appID)
 		if err := row.Scan(&newSequence); err != nil {
 			return 0, errors.Wrap(err, "failed to find current max sequence in row")
@@ -64,7 +64,7 @@ func (d *DownstreamGitOps) CreateGitOpsDownstreamCommit(appID string, clusterID 
 
 // return the list of versions available for an app
 func GetVersions(appID string) ([]types.AppVersion, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select sequence from app_version where app_id = $1 order by sequence asc`
 	rows, err := db.Query(query, appID)
 	if err != nil {
@@ -93,7 +93,7 @@ func GetVersions(appID string) ([]types.AppVersion, error) {
 
 // DeployVersion deploys the version for the given sequence
 func DeployVersion(appID string, sequence int64) error {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -121,7 +121,7 @@ func DeployVersion(appID string, sequence int64) error {
 }
 
 func GetRealizedLinksFromAppSpec(appID string, sequence int64) ([]types.RealizedLink, error) {
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select app_spec, kots_app_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, appID, sequence)
 

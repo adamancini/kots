@@ -84,7 +84,7 @@ func GetMetricCharts(appID string, sequence int64, prometheusAddress string) ([]
 		return []MetricChart{}, nil
 	}
 
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select kots_app_spec from app_version where app_id = $1 and sequence = $2`
 	row := db.QueryRow(query, appID, sequence)
 

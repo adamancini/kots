@@ -41,7 +41,7 @@ type SessionMetadata struct {
 func (s *KOTSStore) migrateSessionsFromPostgres() error {
 	logger.Debug("migrating sessions from postgres")
 
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `select id, metadata, issued_at, expire_at from session`
 	rows, err := db.Query(query)
 	if err != nil {

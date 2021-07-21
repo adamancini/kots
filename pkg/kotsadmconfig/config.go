@@ -123,7 +123,7 @@ func UpdateConfigValuesInDB(filesInDir string, appID string, sequence int64) err
 		return errors.Wrap(err, "failed to marshal configvalues spec")
 	}
 
-	db := persistence.MustGetPGSession()
+	db := persistence.MustGetDBSession()
 	query := `update app_version set config_values = $1 where app_id = $2 and sequence = $3`
 	_, err = db.Exec(query, configValues, appID, sequence)
 	if err != nil {

@@ -87,7 +87,7 @@ func waitForPostgres(ctx context.Context) error {
 
 	period := 1 * time.Second // TOOD: backoff
 	for {
-		db := persistence.MustGetPGSession()
+		db := persistence.MustGetDBSession()
 
 		// any SQL will do.  just need tables to be created.
 		query := `select count(1) from app`

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"os"
 	"strings"
 
 	"github.com/replicatedhq/kots/pkg/apiserver"
@@ -24,7 +25,14 @@ func APICmd() *cobra.Command {
 				logger.SetDebug()
 			}
 
-			apiserver.Start()
+			params := apiserver.APIServerParams{
+				Version:                os.Getenv("VERSION"),
+				PostgresURI:            os.Getenv("POSTGRES_URI"),
+				AutocreateClusterToken: os.Getenv("AUTOCREATE_CLUSTER_TOKEN"),
+				EnableIdentity:         true,
+			}
+
+			apiserver.Start(&params)
 			return nil
 		},
 	}

@@ -348,9 +348,8 @@ func kustomizeHelmNamespace(baseFiles []BaseFile, renderOptions *RenderOptions) 
 		return nil, errors.Wrap(err, "failed to write kustomization file")
 	}
 
-	fSys := filesys.MakeFsOnDisk()
-	k := krusty.MakeKustomizer(fSys, krusty.MakeDefaultOptions())
-	m, err := k.Run(chartsPath)
+	k := krusty.MakeKustomizer(krusty.MakeDefaultOptions())
+	m, err := k.Run(filesys.MakeFsOnDisk(), chartsPath)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to kustomize %s", chartsPath)
 	}
