@@ -1,6 +1,7 @@
 package kotsstore
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -29,6 +30,7 @@ import (
 	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
 	kuberneteserrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	serializer "k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
@@ -613,4 +615,20 @@ func (s *KOTSStore) GetAppVersionsAfter(appID string, sequence int64) ([]*versio
 	}
 
 	return versions, nil
+}
+
+func (s *KOTSStore) UpdateAppVersionInstallationSpec(appID string, sequence int64, installation kotsv1beta1.Installation) error {
+	ser := serializer.NewYAMLSerializer(serializer.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+	var b bytes.Buffer
+	if err := ser.Encode(&installation, &b); err != nil {
+		return errors.Wrap(err, "failed to encode installation")
+	}
+
+	db := persistence.MustGetPGSession()
+	query := `UPDATE app_version SET kots_installation_spec = $1 WHERE app_id = $2 AND sequence = $3`
+	_, err := db.Exec(query, b.String(), appID, sequence)
+	if err != nil {
+		return errors.Wrap(err, "failed to exec")
+	}
+	return nil
 }
