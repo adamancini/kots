@@ -37,6 +37,7 @@ type WriteOptions struct {
 	RootDir             string
 	CreateAppDir        bool
 	IncludeAdminConsole bool
+	IncludeApp          bool
 	IncludeMinio        bool
 	HTTPProxyEnvValue   string
 	HTTPSProxyEnvValue  string

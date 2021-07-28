@@ -49,6 +49,7 @@ type PullOptions struct {
 	UpdateCursor           string
 	ExcludeKotsKinds       bool
 	ExcludeAdminConsole    bool
+	ExcludeApp             bool
 	IncludeMinio           bool
 	SharedPassword         string
 	CreateAppDir           bool
@@ -265,11 +266,13 @@ func Pull(upstreamURI string, pullOptions PullOptions) (string, error) {
 	}
 
 	includeAdminConsole := uri.Scheme == "replicated" && !pullOptions.ExcludeAdminConsole
+	includeApp := !pullOptions.ExcludeApp
 
 	writeUpstreamOptions := upstreamtypes.WriteOptions{
 		RootDir:             pullOptions.RootDir,
 		CreateAppDir:        pullOptions.CreateAppDir,
 		IncludeAdminConsole: includeAdminConsole,
+		IncludeApp:          includeApp,
 		SharedPassword:      pullOptions.SharedPassword,
 		EncryptConfig:       encryptConfig,
 		HTTPProxyEnvValue:   pullOptions.HTTPProxyEnvValue,

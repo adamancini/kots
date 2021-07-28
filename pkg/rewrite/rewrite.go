@@ -102,6 +102,7 @@ func Rewrite(rewriteOptions RewriteOptions) error {
 		RootDir:              rewriteOptions.RootDir,
 		CreateAppDir:         rewriteOptions.CreateAppDir,
 		IncludeAdminConsole:  false,
+		IncludeApp:           true,
 		PreserveInstallation: true,
 		IsOpenShift:          k8sutil.IsOpenShift(clientset),
 	}

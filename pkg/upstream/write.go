@@ -25,6 +25,10 @@ func WriteUpstream(u *types.Upstream, options types.WriteOptions) error {
 
 	renderDir = path.Join(renderDir, "upstream")
 
+	if !options.IncludeApp {
+		u.Files = []types.UpstreamFile{}
+	}
+
 	if options.IncludeAdminConsole {
 		adminConsoleFiles, err := generateAdminConsoleFiles(renderDir, options)
 		if err != nil {

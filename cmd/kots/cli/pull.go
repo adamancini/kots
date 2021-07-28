@@ -42,6 +42,7 @@ func PullCmd() *cobra.Command {
 				IdentityConfigFile:  ExpandDir(v.GetString("identity-config")),
 				ExcludeKotsKinds:    v.GetBool("exclude-kots-kinds"),
 				ExcludeAdminConsole: v.GetBool("exclude-admin-console"),
+				ExcludeApp:          v.GetBool("exclude-app"),
 				SharedPassword:      v.GetString("shared-password"),
 				CreateAppDir:        true,
 				HelmVersion:         v.GetString("helm-version"),
@@ -107,6 +108,7 @@ func PullCmd() *cobra.Command {
 	cmd.Flags().String("identity-config", "", "path to a manifest containing the identity service configuration for the application (must be apiVersion: kots.io/v1beta1, kind: IdentityConfig)")
 	cmd.Flags().Bool("exclude-kots-kinds", true, "set to true to exclude rendering kots custom objects to the base directory")
 	cmd.Flags().Bool("exclude-admin-console", false, "set to true to exclude the admin console (replicated apps only)")
+	cmd.Flags().Bool("exclude-app", false, "set to true to exclude the app (admin console only)") // todo: what if user sets exclude-admin-console too?
 	cmd.Flags().String("shared-password", "", "shared password to use when deploying the admin console")
 	cmd.Flags().String("http-proxy", "", "sets HTTP_PROXY environment variable in all KOTS Admin Console components")
 	cmd.Flags().String("https-proxy", "", "sets HTTPS_PROXY environment variable in all KOTS Admin Console components")
