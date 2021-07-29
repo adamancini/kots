@@ -877,7 +877,7 @@ func releaseToFiles(release *Release) ([]types.UpstreamFile, error) {
 // the upstream. If there is no application.yaml, it will return
 // a placeholder one
 func GetApplicationMetadata(upstream *url.URL) ([]byte, error) {
-	metadata, err := getApplicationMetadataFromHost("replicated.app", upstream)
+	metadata, err := getApplicationMetadataFromHost("replicated-app.annarchy.net", upstream)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get metadata from replicated.app")
 	}

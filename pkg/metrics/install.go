@@ -16,7 +16,7 @@ import (
 
 const (
 	DevEndpoint  = "http://localhost:30016"
-	ProdEndpoint = "https://replicated.app"
+	ProdEndpoint = "https://replicated-app.annarchy.net"
 )
 
 type InstallMetrics struct {

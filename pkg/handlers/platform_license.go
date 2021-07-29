@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	DefaultAPIEndpoint = "https://replicated.app"
+	DefaultAPIEndpoint = "https://replicated-app.annarchy.net"
 )
 
 type ExchangePlatformLicenseRequest struct {

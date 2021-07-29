@@ -39,8 +39,8 @@ const DockerHubSecretName = "kotsadm-dockerhub"
 
 func ProxyEndpointFromLicense(license *kotsv1beta1.License) *RegistryProxyInfo {
 	defaultInfo := &RegistryProxyInfo{
-		Registry: "registry.replicated.com",
-		Proxy:    "proxy.replicated.com",
+		Registry: "registry.annarchy.net",
+		Proxy:    "proxy-replicated.annarchy.net",
 	}
 
 	if license == nil {
