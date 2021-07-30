@@ -18,6 +18,7 @@ import (
 	"github.com/mholt/archiver"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
+	kotsv1beta1 "github.com/replicatedhq/kots/kotskinds/apis/kots/v1beta1"
 	versiontypes "github.com/replicatedhq/kots/pkg/api/version/types"
 	apptypes "github.com/replicatedhq/kots/pkg/app/types"
 	gitopstypes "github.com/replicatedhq/kots/pkg/gitops/types"
@@ -358,9 +359,9 @@ func (s *OCIStore) CreateAppVersion(appID string, currentSequence *int64, filesI
 		// will support multiple downstreams, so this is cleaner here for now
 
 		downstreamStatus := types.VersionPending
-		if currentSequence == nil && kotsKinds.Config != nil { // initial version should always require configuration (if exists) even if all required items are already set and have values (except for automated installs, which can override this later)
+		if currentSequence == nil && kotsKinds.IsConfigurable() { // initial version should always require configuration (if exists) even if all required items are already set and have values (except for automated installs, which can override this later)
 			downstreamStatus = types.VersionPendingConfig
-		} else if kotsKinds.Preflight != nil && !skipPreflights {
+		} else if kotsKinds.HasPreflights() && !skipPreflights {
 			downstreamStatus = types.VersionPendingPreflight
 		}
 		if currentSequence != nil { // only check if the version needs configuration for later versions (not the initial one) since the config is always required for the initial version (except for automated installs, which can override that later)
@@ -490,6 +491,7 @@ func (s *OCIStore) GetAppVersion(appID string, sequence int64) (*versiontypes.Ap
 	if err := json.Unmarshal([]byte(data), &appVersion); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal app version")
 	}
+	appVersion.AppID = appID
 
 	return &appVersion, nil
 }
@@ -506,4 +508,8 @@ func refFromAppVersion(appID string, sequence int64, baseURI string) string {
 	ref := fmt.Sprintf("%s/%s:%d", strings.TrimPrefix(baseURI, "docker://"), strings.ToLower(appID), sequence)
 
 	return ref
+}
+
+func (s *OCIStore) UpdateAppVersionInstallationSpec(appID string, sequence int64, installation kotsv1beta1.Installation) error {
+	return ErrNotImplemented
 }

@@ -136,7 +136,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Setup Node.js environment
-      uses: actions/setup-node@v2.2.0
+      uses: actions/setup-node@v2.3.0
       with:
         node-version: '10'
       
@@ -176,7 +176,7 @@ jobs:
       run: echo ::set-output name=GIT_TAG::${GITHUB_REF/refs\/tags\//}
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v2.2.0
+      uses: actions/setup-node@v2.3.0
       with:
         node-version: '10'
 
@@ -640,7 +640,7 @@ jobs:
         id: scan
         uses: anchore/scan-action@v2
         with:
-          image: "minio/minio:RELEASE.2021-07-08T19-43-25Z"
+          image: "minio/minio:RELEASE.2021-07-27T02-40-15Z"
           fail-build: false
           acs-report-enable: true
           severity-cutoff: high

@@ -152,6 +152,20 @@ func (k *KotsKinds) DecryptConfigValues() error {
 	return nil
 }
 
+func (k *KotsKinds) IsConfigurable() bool {
+	if k == nil || k.Config == nil {
+		return false
+	}
+	return len(k.Config.Spec.Groups) > 0
+}
+
+func (k *KotsKinds) HasPreflights() bool {
+	if k == nil || k.Preflight == nil {
+		return false
+	}
+	return len(k.Preflight.Spec.Analyzers) > 0
+}
+
 // KustomizeVersion will return the kustomize version to use for this application
 // applying the default, if there is one, for the current version of kots
 func (k KotsKinds) KustomizeVersion() string {
@@ -547,6 +561,20 @@ func LoadConfigValuesFromFile(configValuesFilePath string) (*kotsv1beta1.ConfigV
 	return obj.(*kotsv1beta1.ConfigValues), nil
 }
 
+func LoadConfigFromBytes(data []byte) (*kotsv1beta1.Config, error) {
+	decode := scheme.Codecs.UniversalDeserializer().Decode
+	obj, gvk, err := decode(data, nil, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode config data")
+	}
+
+	if gvk.Group != "kots.io" || gvk.Version != "v1beta1" || gvk.Kind != "Config" {
+		return nil, errors.Errorf("unexpected GVK: %s", gvk.String())
+	}
+
+	return obj.(*kotsv1beta1.Config), nil
+}
+
 func LoadPreflightFromContents(content []byte) (*troubleshootv1beta2.Preflight, error) {
 	content, err := docrewrite.ConvertToV1Beta2(content)
 	if err != nil {
@@ -618,9 +646,11 @@ func SupportBundleToAnalyzer(sb *troubleshootv1beta2.SupportBundle) *troubleshoo
 }
 
 type InstallationParams struct {
-	SkipImagePush      bool
-	SkipPreflights     bool
-	RegistryIsReadOnly bool
+	KotsadmRegistry     string
+	SkipImagePush       bool
+	SkipPreflights      bool
+	RegistryIsReadOnly  bool
+	EnableImageDeletion bool
 }
 
 func GetInstallationParams(configMapName string) (InstallationParams, error) {
@@ -640,9 +670,11 @@ func GetInstallationParams(configMapName string) (InstallationParams, error) {
 		return autoConfig, errors.Wrap(err, "failed to get existing kotsadm config map")
 	}
 
+	autoConfig.KotsadmRegistry = kotsadmConfigMap.Data["kotsadm-registry"]
 	autoConfig.SkipImagePush, _ = strconv.ParseBool(kotsadmConfigMap.Data["initial-app-images-pushed"])
 	autoConfig.SkipPreflights, _ = strconv.ParseBool(kotsadmConfigMap.Data["skip-preflights"])
 	autoConfig.RegistryIsReadOnly, _ = strconv.ParseBool(kotsadmConfigMap.Data["registry-is-read-only"])
+	autoConfig.EnableImageDeletion, _ = strconv.ParseBool(kotsadmConfigMap.Data["enable-image-deletion"])
 
 	return autoConfig, nil
 }
